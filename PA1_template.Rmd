@@ -1,5 +1,6 @@
 # Reproducible Research: Peer Assessment 1
 
+github repo:  https://github.com/amaner/RepData_PeerAssessment1
 
 ## Loading and preprocessing the data
 Load the data
