@@ -3,7 +3,8 @@
 
 ## Loading and preprocessing the data
 Load the data
-```{r loaddata, echo=TRUE, warning=FALSE}
+
+```r
 dat <- read.csv("activity.csv")
 dat$date <- as.character(dat$date)
 ```
@@ -13,7 +14,8 @@ Transform data (if necessary) N/A
 * Make a histogram of the total number of steps taken per day.
 
 To do this, loop over each day (of which there are 61) and add up the steps taken that day (ignoring NAs).
-```{r dailysteps, echo=TRUE, warning=FALSE}
+
+```r
 daily.steps <- rep(NA,61)
 for (i in 1:61) {
      l = (i-1)*288+1
@@ -21,31 +23,46 @@ for (i in 1:61) {
      daily.steps[i] <- sum(dat$steps[l:u])
 }
 ```
-```{r figure1, echo=TRUE, fig.width=7, fig.height=6}
+
+```r
 hist(daily.steps,breaks=15,col="blue",border="white",
      main = "Histogram of Steps Per Day", xlab = "Steps",
      ylab = "Frequency",bg="white")
 ```
 
+![plot of chunk figure1](figure/figure1.png) 
+
 * Calculate and report the mean and median total steps taken per day.
-```{r meanmedianone, echo=TRUE, warning=FALSE}
+
+```r
 mean.steps <- mean(daily.steps, na.rm = TRUE)
 median.steps <- median(daily.steps, na.rm = TRUE)
 ```
 The mean number of steps per day is:
-```{r meanone, echo=TRUE, warning=FALSE}
+
+```r
 mean.steps
 ```
+
+```
+## [1] 10766
+```
 The median number of steps is:
-```{r medianone, echo=TRUE, warning=FALSE}
+
+```r
 median.steps
+```
+
+```
+## [1] 10765
 ```
 ## What is the average daily activity pattern?
 * Make a time-series plot of the 5-minute interval and the average number of steps taken (averaged across all days).
 
 To do this, first create a 288X61 matrix whose columns contain daily step data, and use it to create a 288 element vector containing the average number of steps per five minute interval, across all days.  Then, glue onto this vector the interval numbers (0 - 2355) and cast it as a data frame.
 
-```{r calcfiveminavesone, echo=TRUE, warning=FALSE}
+
+```r
 days <- matrix(0,ncol=61,nrow=288)
 for (i in 1:61) {
      l <- (i-1)*288 + 1
@@ -62,30 +79,51 @@ fivemin.aves <- cbind(interval, fivemin.aves)
 colnames(fivemin.aves) <- c("interval","aves")
 ```
 Use this data frame of averages to create a time-series plot of the average number of steps taken per five minute interval, averaged across all days.
-```{r figure2, echo=TRUE, warning=FALSE, fig.width=7, fig.height=6}
+
+```r
 plot(fivemin.aves$interval,fivemin.aves$aves,type="l",main="Five Minute Interval Step Averages",xlab="Five Minute Interval",ylab="Average Step Count",bg="white")
 ```
 
+![plot of chunk figure2](figure/figure2.png) 
+
 * Compute the maximum average number of steps in a five minute interval (over all days), and determine which interval has that maximum value.
-```{r findmax, echo=TRUE, warning=FALSE}
+
+```r
 max.index <- which.max(fivemin.aves$aves)
 max.value <- max(fivemin.aves$aves)
 ```
 The five minute interval having the maximum average number of steps:
-```{r maxindex, echo=TRUE, warning=FALSE}
+
+```r
 fivemin.aves$interval[max.index]
+```
+
+```
+## [1] 835
 ```
 This corresponds to the time interval between 8:35AM and 8:40AM.
 
 The maximum average number of steps:
-```{r maxvalue, echo=TRUE, warning=FALSE}
+
+```r
 max.value
+```
+
+```
+## [1] 206.2
 ```
 ## Imputing missing values
 * Compute and report the number of rows (in the original data set) containing missing values (NA).
-```{r compna, echo=TRUE, warning=FALSE}
+
+```r
 nas <- complete.cases(dat)
 table(nas)
+```
+
+```
+## nas
+## FALSE  TRUE 
+##  2304 15264
 ```
 There are 2304 incomplete cases (rows containing NAs).
 
@@ -95,7 +133,8 @@ I chose to replace each five minute interval NA value with the average number of
 
 * Create a new dataset equivalent to the original dataset, with all NA values replaced according to the above strategy.
 
-```{r replacenas, echo=TRUE, warning=FALSE}
+
+```r
 tmp <- dat
 tmp$na <- is.na(tmp$steps)
 for (i in 1:61) {
@@ -114,14 +153,22 @@ dat$steps <- tmp$steps
 ```
 
 The dat data frame now contains no NA values, as can be seen here:
-```{r checkfornas, echo=TRUE, warning=FALSE}
+
+```r
 test <- is.na(dat$steps)
 table(test)
 ```
 
+```
+## test
+## FALSE 
+## 17568
+```
+
 * Make a histogram of the total number of steps per day, using this new data frame, and report the mean and median number of steps taken per day.
 
-```{r meanmediantwo, echo=TRUE, warning=FALSE}
+
+```r
 new.daily.steps <- rep(NA,61)
 for (i in 1:61) {
      l = (i-1)*288+1
@@ -132,20 +179,33 @@ new.mean.steps <- mean(new.daily.steps, na.rm = TRUE)
 new.median.steps <- median(new.daily.steps, na.rm = TRUE)
 ```
 
-```{r figure3, echo=TRUE, fig.width=7, fig.height=6}
+
+```r
 hist(new.daily.steps,breaks=15,col="blue",border="white",
      main = "Histogram of Steps Per Day", xlab = "Steps",
      ylab = "Frequency")
 ```
 
+![plot of chunk figure3](figure/figure3.png) 
+
 The new mean number of steps per day is:
-```{r meantwo, echo=TRUE}
+
+```r
 new.mean.steps
 ```
 
+```
+## [1] 10766
+```
+
 The new median number of steps per day is:
-```{r mediantwo, echo=TRUE}
+
+```r
 new.median.steps
+```
+
+```
+## [1] 10766
 ```
 
 * Do these values differ from those computed in the first part of the assignment?
@@ -159,7 +219,8 @@ Using the method I chose, the effect on the estimators (mean and median) is very
 
 * Create a new factor variable with two levels - "weekday" and "weekend" - indicating whether a given day is a weekday or a weekend day.
 
-```{r makefactor, echo=TRUE}
+
+```r
 dat$date <- as.Date(dat$date)
 dat$day  <- weekdays(dat$date)
 dat$wday <- rep("", length(dat$steps))
@@ -175,9 +236,14 @@ dat$wday <- as.factor(dat$wday)
 class(dat$wday)
 ```
 
+```
+## [1] "factor"
+```
+
 * Make a panel plot showing average number of steps taken per five minute interval, averaged across weekday days or weekend days.
 
-```{r weekandweekendaves, echo=TRUE, warning=FALSE}
+
+```r
 weekday <- subset(dat,dat$wday=="weekday")
 weekend <- subset(dat,dat$wday=="weekend")
 numwkdays <- length(weekday$steps)/288
@@ -214,9 +280,12 @@ for (i in 1:288) newfivemin.aves$wday[i] <- "weekday"
 for (i in 289:576) newfivemin.aves$wday[i] <- "weekend"
 newfivemin.aves$wday <- as.factor(newfivemin.aves$wday)
 ```
-```{r figure4, echo=TRUE, warning=FALSE, fig.width=7, fig.height=6}
+
+```r
 library(lattice)
 xyplot(aves ~ interval | wday, type = "l", data = newfivemin.aves, layout = c(1,2), xlab = "Interval", ylab = "Number of steps", main = "Ave Number of Steps Per Five Minute Interval")
 ```
+
+![plot of chunk figure4](figure/figure4.png) 
 
 As can be seen in the chart above, the subject is generally more active on weekend days than on weekday days, despite the fact that he/she has a spike in activity around 8:30AM on typical weekday days.
